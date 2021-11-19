@@ -67,7 +67,7 @@ int main()
 				printf("Insert its Vietnamese meaning: ");
 				scanf("%s", vietWord);
 
-				dictUpdate(dictionary, engWord, vietWord, &dsize);
+				dictUpdate(dictionary, engWord, vietWord, &dsize, &rsize);
 				break;
 			}
 
@@ -86,7 +86,7 @@ int main()
 				printf("Insert an English word: ");
 				scanf("%s", engWord);
 
-				dictDeleteNode(dictionary, engWord);
+				dictDeleteNode(dictionary, engWord, vietWord, dsize, &rsize);
 				break;
 			}
 

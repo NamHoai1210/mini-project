@@ -28,14 +28,56 @@ void dictInsert(BTA *root, char *engWord, char *vietWord, int *dsize)
 	return;
 }
 //------------------------------------------------------------
-void dictUpdate(BTA *root, char *engWord, char *vietWord, int *dsize)
+void dictUpdate(BTA *root, char *engWord, char *vietWord, int *dsize, int *rsize)
 {
+	init();
 	int check;
 	check = btupd(root, engWord, vietWord, *dsize);
 	if (check == 0)
 		printf("Update successfully!\n");
 	else
+	{
+		char dictWord[256];
+		char a[256];
+		strcpy(a, soundex(engWord));
+
+		if (btpos(root, 1) != 0)
+		{
+			printf("The dictionary is blank!\n");
+			return;
+		}
+
+		printf("Do you mean:\n");
+		int i = 0;
+		cache cacheStorage[100];
+		char vietWordTemp[256];
+		while (btseln(root, dictWord, vietWordTemp, *dsize, rsize) == 0)
+		{	
+			char b[256];
+			strcpy(b, soundex(dictWord));
+
+			if (strcmp(a, b) == 0)
+			{
+				strcpy(cacheStorage[i].data, dictWord);
+				i++;
+				printf("\t%d:\t%s\n", i, dictWord);
+			}
+		}
+
+		int choice;
+		printf("Your choice: ");
+		scanf("%d", &choice);
+		int j = 0;
+		for (; j < i; j++)
+		{
+			if (choice == j+1)
+			{
+				dictUpdate(root, cacheStorage[j].data, vietWord, dsize, rsize);
+				return;
+			}
+		}
 		printf("Some errors occur while updating!\n");
+	}
 }
 //------------------------------------------------------------
 void dictSearch(BTA *root, char *engWord, char *vietWord, int dsize, int *rsize, int pos)
@@ -89,12 +131,55 @@ void dictSearch(BTA *root, char *engWord, char *vietWord, int dsize, int *rsize,
 	};
 }
 //----------------------------------------------------------
-void dictDeleteNode(BTA *root, char *engWord)
+void dictDeleteNode(BTA *root, char *engWord, char *vietWord, int dsize, int *rsize)
 {
+	init();
 	if (btdel(root, engWord) == 0)
 		printf("Delete successfully!\n");
 	else
+	{
+		char dictWord[256];
+		char a[256];
+		strcpy(a, soundex(engWord));
+
+		if (btpos(root, 1) != 0)
+		{
+			printf("The dictionary is blank!\n");
+			return;
+		}
+
+		printf("Do you mean:\n");
+		int i = 0;
+		cache cacheStorage[100];
+		while (btseln(root, dictWord, vietWord, dsize, rsize) == 0)
+		{	
+			char b[256];
+			strcpy(b, soundex(dictWord));
+
+			if (strcmp(a, b) == 0)
+			{
+				strcpy(cacheStorage[i].data, dictWord);
+				i++;
+				printf("\t%d:\t%s\n", i, dictWord);
+			}
+		}
+
+		int choice;
+		printf("Your choice: ");
+		scanf("%d", &choice);
+		int j = 0;
+		for (; j < i; j++)
+		{
+			if (choice == j+1)
+			{
+				dictDeleteNode(root, cacheStorage[j].data, vietWord, dsize, rsize);
+				return;
+			}
+		}
+
 		printf("Some errors occur while deleting!\n");
+		return;
+	}
 }
 //----------------------------------------------------------
 void dictPrint(BTA *root, char *engWord, char *vietWord, int pos, int dsize, int *rsize)
